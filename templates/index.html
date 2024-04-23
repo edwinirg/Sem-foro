@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Personas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #video_container {
+            width: 80%;
+            max-width: 800px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            overflow: hidden; /* Para recortar la imagen si es demasiado grande */
+        }
+        #video_feed {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detección de Personas</h1>
+    <div id="video_container">
+        <img id="video_feed" src="{{ url_for('video_feed') }}">
+    </div>
+    <button id="toggle_button" onclick="toggleCamera()">Activar Cámara</button>
+
+    <script>
+        var paused = true;
+        var toggleButton = document.getElementById("toggle_button");
+
+        function toggleCamera() {
+            paused = !paused;
+            var img = document.getElementById("video_feed");
+            if (paused) {
+                img.src = "";
+                toggleButton.innerText = "Activar Cámara";
+            } else {
+                img.src = "{{ url_for('video_feed') }}";
+                toggleButton.innerText = "Desactivar Cámara";
+            }
+        }
+    </script>
+</body>
+</html>
