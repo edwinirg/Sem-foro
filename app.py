@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Response
 import cv2
 import paho.mqtt.publish as publish
+import time
 
 app = Flask(__name__)
 
@@ -10,10 +11,11 @@ cv2.ocl.setUseOpenCL(False)
 
 paused = False
 
-MQTT_BROKER = "192.168.1.189"
+MQTT_BROKER = "172.26.49.244"
 MQTT_TOPIC = "demo"
 
 def detect_people():
+    last_detection_time = time.time()
     while True:
         if not paused:
             ret, frame = cap.read()
@@ -35,12 +37,15 @@ def detect_people():
 
                 personas_detectadas = True
 
-                # Envía mensaje MQTT cuando se detecta una persona
-                publish.single(MQTT_TOPIC, "personas", hostname=MQTT_BROKER)
+                # Si no se detectaron personas, enviar un mensaje MQTT
+                if not personas_detectadas:
+                    publish.single(MQTT_TOPIC, "sin personas", hostname=MQTT_BROKER)
 
-            # Si no se detectaron personas, enviar un mensaje MQTT
-            if not personas_detectadas:
-                publish.single(MQTT_TOPIC, "sin personas", hostname=MQTT_BROKER)
+                # Verificar si han pasado 3 segundos desde la última detección
+                if time.time() - last_detection_time >= 3:
+                    # Envía mensaje MQTT cuando se detecta una persona
+                    publish.single(MQTT_TOPIC, "personas", hostname=MQTT_BROKER)
+                    last_detection_time = time.time()
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
