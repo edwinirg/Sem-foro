@@ -8,7 +8,7 @@ from Adafruit_IO import Client
 
 app = Flask(__name__)
 
-# Credenciales para Adafruit IO dash
+# Credenciales para Adafruit IO dash c
 ADAFRUIT_IO_KEY = ''
 ADAFRUIT_IO_USERNAME = ''
 aio = Client(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
