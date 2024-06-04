@@ -1,4 +1,4 @@
-# Importación de librerías
+# Importación de librerías c:
 import cv2
 
 # Capturamos el vídeo
