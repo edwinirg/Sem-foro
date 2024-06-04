@@ -107,5 +107,5 @@ def video_feed():
 def control_flujo():
     return "Control de flujo recibido"
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     app.run(host='0.0.0.0',debug=True)
