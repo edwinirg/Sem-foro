@@ -4,18 +4,32 @@ import paho.mqtt.publish as publish
 import time
 import numpy as np
 import imutils
+from Adafruit_IO import Client
 
 app = Flask(__name__)
+
+# Credenciales para Adafruit IO dash
+ADAFRUIT_IO_KEY = ''
+ADAFRUIT_IO_USERNAME = ''
+aio = Client(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
 
 cap = cv2.VideoCapture(0)
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+cv2.ocl.setUseOpenCL(False)
+
 paused = False
 
 MQTT_BROKER = "192.168.1.189"
 MQTT_TOPIC = "demo"
 
+
+contador_movimiento = 0
+
+def send_to_adafruit_io(contador):
+    aio.send('movement-events', contador)
 def detect_people():
+    global contador_movimiento
     last_detection_time = time.time()
     while True:
         if not paused:
@@ -65,6 +79,10 @@ def detect_people():
             else:
                 publish.single(MQTT_TOPIC, "sin personas", hostname=MQTT_BROKER)
 
+            # Envía el contador de movimiento a Adafruit IO
+            if contador_movimiento > 0:
+                send_to_adafruit_io(contador_movimiento)
+
             # Visualizar el área que vamos a analizar y el estado de la detección de movimiento
             if isinstance(frame, np.ndarray):
                 cv2.drawContours(frame, [area_pts], -1, color, 2)
@@ -89,5 +107,5 @@ def video_feed():
 def control_flujo():
     return "Control de flujo recibido"
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+if _name_ == '_main_':
+    app.run(host='0.0.0.0',debug=True)
